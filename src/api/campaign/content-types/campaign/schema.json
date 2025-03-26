@@ -1,0 +1,43 @@
+{
+  "kind": "collectionType",
+  "collectionName": "campaigns",
+  "info": {
+    "singularName": "campaign",
+    "pluralName": "campaigns",
+    "displayName": "Campaign"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "content": {
+      "type": "blocks",
+      "required": true
+    },
+    "image": {
+      "allowedTypes": [
+        "images",
+        "files"
+      ],
+      "type": "media",
+      "multiple": false,
+      "required": true
+    },
+    "amountRaised": {
+      "default": 0,
+      "type": "decimal"
+    },
+    "amountGoal": {
+      "type": "decimal",
+      "required": true
+    },
+    "endDate": {
+      "type": "datetime",
+      "required": true
+    }
+  }
+}
