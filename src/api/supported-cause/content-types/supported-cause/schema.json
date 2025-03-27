@@ -1,0 +1,31 @@
+{
+  "kind": "collectionType",
+  "collectionName": "supported_causes",
+  "info": {
+    "singularName": "supported-cause",
+    "pluralName": "supported-causes",
+    "displayName": "SupportedCause",
+    "description": ""
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "title": {
+      "type": "string",
+      "required": true
+    },
+    "description": {
+      "type": "text",
+      "required": true
+    },
+    "iconUrl": {
+      "type": "string",
+      "required": true
+    },
+    "content": {
+      "type": "blocks",
+      "required": true
+    }
+  }
+}

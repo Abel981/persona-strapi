@@ -1,0 +1,17 @@
+{
+  "kind": "singleType",
+  "collectionName": "missions",
+  "info": {
+    "singularName": "mission",
+    "pluralName": "missions",
+    "displayName": "Mission"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "missionText": {
+      "type": "blocks"
+    }
+  }
+}
