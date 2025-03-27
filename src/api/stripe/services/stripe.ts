@@ -24,7 +24,10 @@ export default (() => {
 
       await strapi.documents("api::campaign.campaign").update({
         documentId: campaignId,
-        data: { amountRaised: campaign.amountRaised + amount },
+        data: {
+          amountRaised: campaign.amountRaised + amount,
+        },
+        status: "published",
       });
     } catch (error) {
       strapi.log.error(`Campaign update failed: ${error.message}`);
