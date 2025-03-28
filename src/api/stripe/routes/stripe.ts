@@ -3,7 +3,7 @@ export default {
 
     {
       method: "POST",
-      path: "/stripe/create-onetime-payment",
+      path: "/stripe/payments/one-time",
       handler: "stripe.createOneTimePayment",
       config: {
         auth: false,

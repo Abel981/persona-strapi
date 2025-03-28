@@ -1,4 +1,5 @@
 import { Stripe } from "stripe";
+import { STRIPE_PRODUCTS, StripeProductType } from "../constants/products";
 
 const config = {
   stripePublishableKey: process.env.STRIPE_PUBLIC_KEY,
@@ -12,6 +13,14 @@ export default (() => {
   // ======================
   // PRIVATE HELPERS (closure-scoped)
   // ======================
+  interface PaymentParams {
+    amount: number;
+    title: string;
+    productType: StripeProductType;
+    uniqueId: string; // For identifying specific campaign, course, etc.
+    metadata: Record<string, any>;
+  }
+  
   const updateCampaignAmount = async (campaignId: string, amount: number) => {
     try {
       const campaign = await strapi
@@ -66,18 +75,35 @@ export default (() => {
   // PUBLIC API
   // ======================
   return {
-    async createOneTimePayment({ amount, campaignId, metadata }) {
+    async createOneTimePayment({
+      amount,
+      title,
+      productType,
+      uniqueId,
+      metadata,
+    }: PaymentParams) {
       try {
+        if (!STRIPE_PRODUCTS[productType]) {
+          throw new Error(`Invalid product type: ${productType}`);
+        }
+
+        const productName = STRIPE_PRODUCTS[productType].getName(title);
+        const productTypeValue = STRIPE_PRODUCTS[productType].type;
+
         const existingProducts = await stripe.products.search({
-          query: `active:'true' AND metadata['campaign_id']:'${campaignId}'`,
+          query: `active:'true' AND metadata['product_type']:'${productTypeValue}' AND metadata['unique_id']:'${uniqueId}'`,
         });
 
         const product =
           existingProducts.data.length > 0
             ? existingProducts.data[0]
             : await stripe.products.create({
-                name: `Donation to ${campaignId}`,
-                metadata: { campaignId },
+                name: productName,
+                metadata: {
+                  product_type: productTypeValue,
+                  unique_id: uniqueId,
+                  ...metadata,
+                },
               });
 
         return await stripe.checkout.sessions.create({
@@ -93,7 +119,12 @@ export default (() => {
               quantity: 1,
             },
           ],
-          metadata: { ...metadata, campaignId, amount },
+          metadata: {
+            amount,
+            product_type: productTypeValue,
+            unique_id: uniqueId,
+            ...metadata,
+          },
           success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
           cancel_url: `${process.env.FRONTEND_URL}/cancel`,
         });

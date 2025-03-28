@@ -3,15 +3,18 @@ import stripeService from "../services/stripe";
 export default {
   async createOneTimePayment(ctx: Context) {
     try {
-      const { campaignId, amount } = ctx.request.body;
-      if (!campaignId || !amount || amount <= 0) {
+      const { amount, title, productType, metadata, uniqueId } =
+        ctx.request.body;
+      if (!amount || amount <= 0 || !title || !productType || !uniqueId) {
         return ctx.badRequest("Invalid campaign or amount");
       }
 
       let session = await stripeService.createOneTimePayment({
         amount,
-        campaignId,
-        metadata: {},
+        title,
+        productType,
+        uniqueId,
+        metadata,
       });
       return ctx.send({
         ["sessionId"]: session.id,

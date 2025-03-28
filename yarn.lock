@@ -2015,6 +2015,15 @@
     url-join "4.0.1"
     yup "0.32.9"
 
+"@strapi/provider-email-mailgun@^5.12.1":
+  version "5.12.1"
+  resolved "https://registry.yarnpkg.com/@strapi/provider-email-mailgun/-/provider-email-mailgun-5.12.1.tgz#768f802ca1924dffc2f6806fe20e9e7c42893043"
+  integrity sha512-q8oOMGNE7vamC1KRAfZegDjtou7xQWhEOj4x5qgSpb8ZOkagzv5AlWSBGYx5+CtP3gdM7fqekC4KfPcWhlUzsQ==
+  dependencies:
+    "@strapi/utils" "5.12.1"
+    form-data "^4.0.0"
+    mailgun.js "10.2.1"
+
 "@strapi/provider-email-sendmail@5.12.0":
   version "5.12.0"
   resolved "https://registry.yarnpkg.com/@strapi/provider-email-sendmail/-/provider-email-sendmail-5.12.0.tgz#259ada93d348febd68e8768773e87c01ec88f60c"
@@ -2209,6 +2218,22 @@
   version "5.12.0"
   resolved "https://registry.yarnpkg.com/@strapi/utils/-/utils-5.12.0.tgz#29ff6ffac3534f456d56a3615e8b21f32b553195"
   integrity sha512-I2Wyx4Err9l4h6kV+SA5+03FhBhJcWUf8eckc5jiOQpYxgF+Lr0Wq4se56zSWoDB7kinLJdHloVRjgj1X4BTnQ==
+  dependencies:
+    "@sindresorhus/slugify" "1.1.0"
+    date-fns "2.30.0"
+    execa "5.1.1"
+    http-errors "2.0.0"
+    lodash "4.17.21"
+    node-machine-id "1.1.12"
+    p-map "4.0.0"
+    preferred-pm "3.1.2"
+    yup "0.32.9"
+    zod "^3.22.4"
+
+"@strapi/utils@5.12.1":
+  version "5.12.1"
+  resolved "https://registry.yarnpkg.com/@strapi/utils/-/utils-5.12.1.tgz#a6d0d3d268dafe9bb67e4619fa696323f7158d61"
+  integrity sha512-A9z+M6zayNLDjRaz9dh6rTAemF0rDJAcqZRR+k723G2lEJB7DfM/jWIcfXAB6ignadxCpwT9JauPl9jLKWtXLQ==
   dependencies:
     "@sindresorhus/slugify" "1.1.0"
     date-fns "2.30.0"
@@ -3209,6 +3234,15 @@ axios@1.8.2:
     form-data "^4.0.0"
     proxy-from-env "^1.1.0"
 
+axios@^1.6.0:
+  version "1.8.4"
+  resolved "https://registry.yarnpkg.com/axios/-/axios-1.8.4.tgz#78990bb4bc63d2cae072952d374835950a82f447"
+  integrity sha512-eBSYY4Y68NNlHbHBMdeDmKNtDgXWhQsJcGqzO3iLUM0GraQFSS9cVgPX5I9b3lbdFKyYoAEGAZF1DwhTaljNAw==
+  dependencies:
+    follow-redirects "^1.15.6"
+    form-data "^4.0.0"
+    proxy-from-env "^1.1.0"
+
 b4a@^1.6.4:
   version "1.6.7"
   resolved "https://registry.yarnpkg.com/b4a/-/b4a-1.6.7.tgz#a99587d4ebbfbd5a6e3b21bdb5d5fa385767abe4"
@@ -3260,6 +3294,11 @@ bare-stream@^2.6.4:
   integrity sha512-jSmxKJNJmHySi6hC42zlZnq00rga4jjxcgNZjY9N5WlOe/iOoGRtdwGsHzQv2RlH2KOYMwGUXhf2zXd32BA9RA==
   dependencies:
     streamx "^2.21.0"
+
+base-64@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/base-64/-/base-64-1.0.0.tgz#09d0f2084e32a3fd08c2475b973788eee6ae8f4a"
+  integrity sha512-kwDPIFCGx0NZHog36dj+tHiwP4QMzsZ3AgMViUBKI0+V5n4U0ufTCUMhnQ04diaRI8EX/QcPfql7zlhZ7j4zgg==
 
 base64-js@^1.3.1:
   version "1.5.1"
@@ -6655,6 +6694,15 @@ mailcomposer@3.12.0:
     buildmail "3.10.0"
     libmime "2.1.0"
 
+mailgun.js@10.2.1:
+  version "10.2.1"
+  resolved "https://registry.yarnpkg.com/mailgun.js/-/mailgun.js-10.2.1.tgz#411fc39c9d2bd26fcb2445416deab81ebd87044f"
+  integrity sha512-lslXpLdwtLyavJGHsPKlpXLnd3XEuwWY5X/KaTAvv2UvHiOWSlUzqkGW21vVgcQQ9AKw0s5ayS5V9Cv8Ze2OIw==
+  dependencies:
+    axios "^1.6.0"
+    base-64 "^1.0.0"
+    url-join "^4.0.1"
+
 make-dir@^3.0.0:
   version "3.1.0"
   resolved "https://registry.yarnpkg.com/make-dir/-/make-dir-3.1.0.tgz#415e967046b3a7f1d185277d84aa58203726a13f"
@@ -9639,7 +9687,7 @@ uri-js@^4.2.2, uri-js@^4.4.1:
   dependencies:
     punycode "^2.1.0"
 
-url-join@4.0.1:
+url-join@4.0.1, url-join@^4.0.1:
   version "4.0.1"
   resolved "https://registry.yarnpkg.com/url-join/-/url-join-4.0.1.tgz#b642e21a2646808ffa178c4c5fda39844e12cde7"
   integrity sha512-jk1+QP6ZJqyOiuEI9AEWQfju/nB2Pw466kbA0LEZljHwKeMgd9WrAEgEGxjPDD2+TNbbb37rTyhEfrCXfuKXnA==
