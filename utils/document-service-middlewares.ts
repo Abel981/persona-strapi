@@ -16,14 +16,14 @@ const emailNotificationMiddleware = () => {
       pageTypes.includes(context.uid) &&
       sendEmailActions.includes(context.action)
     ) {
-      console.log("heyu");
-      const subscribers = await strapi
-        .documents("api::subscriber.subscriber")
-        .findMany();
-      await emailService.sendBlogNotificationInBatches(
-        context.params.documentId,
-        subscribers
-      ); // Notify the author via email
+      /// TODO: Implement email notification
+      // const subscribers = await strapi
+      //   .documents("api::subscriber.subscriber")
+      //   .findMany();
+      // await emailService.sendBlogNotificationInBatches(
+      //   context.params.documentId,
+      //   subscribers
+      // ); // Notify the author via email
     }
 
     return await next(); // Call the next middleware in the stack

@@ -15,6 +15,11 @@
       "type": "email",
       "required": true,
       "unique": true
+    },
+    "isActive": {
+      "type": "boolean",
+      "default": true,
+      "required": false
     }
   }
 }

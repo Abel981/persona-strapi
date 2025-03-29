@@ -20,7 +20,7 @@ export default (() => {
     uniqueId: string; // For identifying specific campaign, course, etc.
     metadata: Record<string, any>;
   }
-  
+
   const updateCampaignAmount = async (campaignId: string, amount: number) => {
     try {
       const campaign = await strapi
@@ -44,11 +44,52 @@ export default (() => {
     }
   };
 
-  const handleCheckoutSession = async (session: any) => {
-    await updateCampaignAmount(
-      session.metadata.campaignId,
-      (session.amount_total || 0) / 100
+  const createDonation = async (metaData) => {
+    await strapi.db.transaction(
+      async ({ trx, rollback, commit, onCommit, onRollback }) => {
+        // It will implicitly use the transaction
+        console.log("hey1");
+        const donor = await strapi.documents("api::donor.donor").create({
+          data: {
+            firstName: metaData.firstName,
+            lastName: metaData.lastName,
+            email: metaData.email,
+            address: metaData.address,
+
+            ...("campaignId" in metaData
+              ? { campaign: metaData["campaignId"] }
+              : {}),
+          },
+          status: "published",
+        });
+        console.log("hey2");
+        await strapi.documents("api::donation.donation").create({
+          data: {
+            amount: metaData.amount,
+            currency: metaData.currency,
+            donor: donor.documentId,
+            interval: metaData.interval,
+            ...("campaignId" in metaData
+              ? { campaign: metaData["campaignId"] }
+              : {}),
+            message: metaData.message,
+          },
+          status: "published",
+        });
+      }
     );
+  };
+
+  const handleCheckoutSession = async (session: any) => {
+    console.log("session", session.metadata);
+    if (session.metadata.campaignId !== undefined) {
+      await updateCampaignAmount(
+        session.metadata.unique_id,
+        (session.amount_total || 0) / 100
+      );
+    }
+
+    await createDonation(session.metadata);
   };
 
   const handleSubscriptionCreated = async (subscription: any) => {
@@ -56,6 +97,8 @@ export default (() => {
       subscription.metadata.campaignId,
       (subscription.items.data[0].price.unit_amount || 0) / 100
     );
+
+    await createDonation(subscription.metadata);
   };
 
   const handleSubscriptionUpdated = async (event: any) => {

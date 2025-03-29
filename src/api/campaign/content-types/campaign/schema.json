@@ -43,6 +43,18 @@
     "description": {
       "type": "text",
       "required": true
+    },
+    "donations": {
+      "type": "relation",
+      "relation": "oneToMany",
+      "target": "api::donation.donation",
+      "mappedBy": "campaign"
+    },
+    "donors": {
+      "type": "relation",
+      "relation": "manyToMany",
+      "target": "api::donor.donor",
+      "mappedBy": "campaign"
     }
   }
 }
