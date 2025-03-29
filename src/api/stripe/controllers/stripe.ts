@@ -65,7 +65,6 @@ export default {
       let unparsed = Symbol.for("unparsedBody");
       const rawBody = ctx.request.body[unparsed];
 
-      console.log("Signature:", signature);
 
       await stripeService.handleWebhookEvent(signature, rawBody);
       ctx.body = { received: true };

@@ -8,5 +8,13 @@ export default {
         auth: false,
       },
     },
+    {
+        method: "GET",
+        path: "/verify-token",
+        handler: "csrf.verifyToken",
+        config: {
+          auth: false,
+        },
+      },
   ],
 };

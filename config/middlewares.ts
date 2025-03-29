@@ -2,16 +2,29 @@ export default [
   "strapi::logger",
   "strapi::errors",
   "strapi::security",
-  "strapi::cors",
+  {
+    name: "strapi::cors",
+    config: {
+      origin: ["http://localhost:3000"], // Your Next.js frontend URL
+      headers: [
+        "Content-Type",
+        "Authorization",
+        "X-CSRF-TOKEN", // Add this line
+        "X-Requested-With",
+      ],
+      credentials: true, // Required for cookies
+      methods: ["GET", "POST", "PUT", "PATCH", "DELETE", "HEAD", "OPTIONS"],
+    },
+  },
   "strapi::poweredBy",
   "strapi::query",
-  "global::csrf-protection",
   {
     name: "strapi::body",
     config: {
       includeUnparsed: true,
     },
   },
+  "global::csrf-protection",
   "strapi::session",
   "strapi::favicon",
   "strapi::public",
