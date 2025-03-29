@@ -5,6 +5,7 @@ export default [
   "strapi::cors",
   "strapi::poweredBy",
   "strapi::query",
+  "global::csrf-protection",
   {
     name: "strapi::body",
     config: {
