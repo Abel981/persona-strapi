@@ -54,11 +54,16 @@ export default (() => {
             lastName: metaData.lastName,
             email: metaData.email,
             address: metaData.address,
-
             ...("campaignId" in metaData
-              ? { campaign: metaData["campaignId"] }
+              ? {
+                  campaign: {
+                    connect: [metaData.campaignId],
+                  },
+                }
               : {}),
+        
           },
+
           status: "published",
         });
         await strapi.documents("api::donation.donation").create({
