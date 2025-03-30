@@ -8,7 +8,7 @@ export default {
       config: {
         auth: false,
         policies: [],
-        middlewares: [],
+        middlewares: ["api::stripe.rate-limit"],
       },
     },
     {
@@ -18,7 +18,7 @@ export default {
       config: {
         auth: false,
         policies: [],
-        middlewares: [],
+        middlewares: ["api::stripe.rate-limit"],
       },
     },
       {

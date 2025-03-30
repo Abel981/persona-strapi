@@ -436,6 +436,37 @@ export interface ApiCampaignCampaign extends Struct.CollectionTypeSchema {
   };
 }
 
+export interface ApiDonationAmountDonationAmount
+  extends Struct.CollectionTypeSchema {
+  collectionName: 'donation_amounts';
+  info: {
+    displayName: 'DonationAmount';
+    pluralName: 'donation-amounts';
+    singularName: 'donation-amount';
+  };
+  options: {
+    draftAndPublish: true;
+  };
+  attributes: {
+    amount: Schema.Attribute.Decimal & Schema.Attribute.Required;
+    createdAt: Schema.Attribute.DateTime;
+    createdBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+    interval: Schema.Attribute.Enumeration<['one-time', 'mo', 'yr']> &
+      Schema.Attribute.Required;
+    locale: Schema.Attribute.String & Schema.Attribute.Private;
+    localizations: Schema.Attribute.Relation<
+      'oneToMany',
+      'api::donation-amount.donation-amount'
+    > &
+      Schema.Attribute.Private;
+    publishedAt: Schema.Attribute.DateTime;
+    updatedAt: Schema.Attribute.DateTime;
+    updatedBy: Schema.Attribute.Relation<'oneToOne', 'admin::user'> &
+      Schema.Attribute.Private;
+  };
+}
+
 export interface ApiDonationDonation extends Struct.CollectionTypeSchema {
   collectionName: 'donations';
   info: {
@@ -1191,6 +1222,7 @@ declare module '@strapi/strapi' {
       'admin::user': AdminUser;
       'api::blog.blog': ApiBlogBlog;
       'api::campaign.campaign': ApiCampaignCampaign;
+      'api::donation-amount.donation-amount': ApiDonationAmountDonationAmount;
       'api::donation.donation': ApiDonationDonation;
       'api::donor.donor': ApiDonorDonor;
       'api::gallery.gallery': ApiGalleryGallery;

@@ -5,7 +5,7 @@ export default [
   {
     name: "strapi::cors",
     config: {
-      origin: ["http://localhost:3000"], // Your Next.js frontend URL
+      origin: [process.env.FRONTEND_URL], // Your Next.js frontend URL
       headers: [
         "Content-Type",
         "Authorization",

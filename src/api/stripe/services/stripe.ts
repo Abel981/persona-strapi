@@ -1,6 +1,8 @@
 import { Stripe } from "stripe";
 import { STRIPE_PRODUCTS, StripeProductType } from "../constants/products";
-
+import emailService from "../../email/services/email";
+import PaymentConfirmationEmail from "../../email/services/templates/PaymentConfirmation";
+import React from "react";
 const config = {
   stripePublishableKey: process.env.STRIPE_PUBLIC_KEY,
   stripePrivateKey: process.env.STRIPE_SECRET_KEY,
@@ -61,7 +63,6 @@ export default (() => {
                   },
                 }
               : {}),
-        
           },
 
           status: "published",
@@ -93,6 +94,17 @@ export default (() => {
     }
 
     await createDonation(session.metadata);
+    await emailService.sendEmail({
+      to: [session.metadata.email],
+      subject: "Thank you for your donation",
+      react: React.createElement(PaymentConfirmationEmail, {
+        amount: session.amount_total,
+        currency: session.currency,
+        email: session.metadata.email,
+        firstName: session.metadata.firstName,
+        lastName: session.metadata.lastName,
+      }),
+    });
   };
 
   const handleSubscriptionCreated = async (subscription: any) => {

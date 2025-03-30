@@ -1,4 +1,28 @@
+import { Resend } from "resend";
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+interface Email {
+  to: string[]; // An array of email addresses to which to send the email.
+  subject: string; // The subject of the email.
+  react: React.ReactElement; // The body of the email as a React element.
+}
 export default {
+  async sendEmail(payload: Email) {
+    const { error } = await resend.emails.send({
+      from: process.env.NEXT_PUBLIC_RESEND_SENDER_ADDRESS || "",
+      replyTo: process.env.RESEND_REPLY_TO_ADDRESS,
+      ...payload, // Expands the contents of 'payload' to include 'to', 'subject', and 'react'.
+      subject: "Persona | " + payload.subject, // override subject to prefix "Melius Digital"
+    });
+
+    if (error) {
+      console.error("Error sending email", error);
+      return null;
+    }
+
+    console.log("Email sent successfully");
+    return true;
+  },
   async sendBlogNotification(blog, subscriber) {
     try {
       // Validate required fields

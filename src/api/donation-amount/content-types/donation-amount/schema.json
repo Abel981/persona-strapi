@@ -1,0 +1,27 @@
+{
+  "kind": "collectionType",
+  "collectionName": "donation_amounts",
+  "info": {
+    "singularName": "donation-amount",
+    "pluralName": "donation-amounts",
+    "displayName": "DonationAmount"
+  },
+  "options": {
+    "draftAndPublish": true
+  },
+  "attributes": {
+    "amount": {
+      "type": "decimal",
+      "required": true
+    },
+    "interval": {
+      "type": "enumeration",
+      "enum": [
+        "one-time",
+        "mo",
+        "yr"
+      ],
+      "required": true
+    }
+  }
+}
