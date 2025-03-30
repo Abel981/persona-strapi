@@ -9,7 +9,7 @@ interface Email {
 export default {
   async sendEmail(payload: Email) {
     const { error } = await resend.emails.send({
-      from: process.env.NEXT_PUBLIC_RESEND_SENDER_ADDRESS || "",
+      from: process.env.RESEND_SENDER_ADDRESS || "",
       replyTo: process.env.RESEND_REPLY_TO_ADDRESS,
       ...payload, // Expands the contents of 'payload' to include 'to', 'subject', and 'react'.
       subject: "Persona | " + payload.subject, // override subject to prefix "Melius Digital"
