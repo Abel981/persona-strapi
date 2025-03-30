@@ -6,7 +6,9 @@ export default {
       const { amount, title, productType, metadata, uniqueId } =
         ctx.request.body;
       if (!amount || amount <= 0 || !title || !productType || !uniqueId) {
-        return ctx.badRequest("Invalid campaign or amount");
+        return ctx.badRequest(
+          "Invalid amount, title, product type or unique id"
+        );
       }
 
       let session = await stripeService.createOneTimePayment({
@@ -33,11 +35,14 @@ export default {
     if (!ctx.request.body) {
       return ctx.badRequest("no body found");
     }
-    const { campaignId, amount, interval } = ctx.request.body;
+    const { amount, title, productType, metadata, interval, uniqueId } =
+      ctx.request.body;
 
     try {
-      if (!campaignId || !amount || amount <= 0) {
-        return ctx.badRequest("Invalid campaign or amount");
+      if (!amount || amount <= 0 || !title || !productType || !uniqueId) {
+        return ctx.badRequest(
+          "Invalid amount, title, product type or unique id"
+        );
       }
 
       if (!["month", "year"].includes(interval)) {
@@ -46,9 +51,11 @@ export default {
 
       let session = await stripeService.createSubscription({
         amount,
-        campaignId,
+        title,
+        productType,
+        uniqueId,
+        metadata,
         interval,
-        metadata: {},
       });
 
       return ctx.send({
@@ -64,7 +71,6 @@ export default {
       const signature = ctx.request.headers["stripe-signature"] as string;
       let unparsed = Symbol.for("unparsedBody");
       const rawBody = ctx.request.body[unparsed];
-
 
       await stripeService.handleWebhookEvent(signature, rawBody);
       ctx.body = { received: true };

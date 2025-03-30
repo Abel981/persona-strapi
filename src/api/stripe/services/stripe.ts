@@ -48,7 +48,6 @@ export default (() => {
     await strapi.db.transaction(
       async ({ trx, rollback, commit, onCommit, onRollback }) => {
         // It will implicitly use the transaction
-        console.log("hey1");
         const donor = await strapi.documents("api::donor.donor").create({
           data: {
             firstName: metaData.firstName,
@@ -62,7 +61,6 @@ export default (() => {
           },
           status: "published",
         });
-        console.log("hey2");
         await strapi.documents("api::donation.donation").create({
           data: {
             amount: metaData.amount,
@@ -93,11 +91,12 @@ export default (() => {
   };
 
   const handleSubscriptionCreated = async (subscription: any) => {
-    await updateCampaignAmount(
-      subscription.metadata.campaignId,
-      (subscription.items.data[0].price.unit_amount || 0) / 100
-    );
-
+    if (subscription.metadata.campaignId !== undefined) {
+      await updateCampaignAmount(
+        subscription.metadata.unique_id,
+        (subscription.items.data[0].price.unit_amount || 0) / 100
+      );
+    }
     await createDonation(subscription.metadata);
   };
 
@@ -176,18 +175,34 @@ export default (() => {
       }
     },
 
-    async createSubscription({ amount, campaignId, interval, metadata }) {
+    async createSubscription({
+      amount,
+      interval,
+      title,
+      productType,
+      uniqueId,
+      metadata,
+    }) {
       try {
+        if (!STRIPE_PRODUCTS[productType]) {
+          throw new Error(`Invalid product type: ${productType}`);
+        }
+        const productName = STRIPE_PRODUCTS[productType].getName(title);
+        const productTypeValue = STRIPE_PRODUCTS[productType].type;
         const existingProducts = await stripe.products.search({
-          query: `active:'true' AND metadata['campaign_id']:'${campaignId}'`,
+          query: `active:'true' AND metadata['product_type']:'${productTypeValue}' AND metadata['unique_id']:'${uniqueId}'`,
         });
 
         const product =
           existingProducts.data.length > 0
             ? existingProducts.data[0]
             : await stripe.products.create({
-                name: `Donation to ${campaignId} (Recurring)`,
-                metadata: { campaignId },
+                name: productName,
+                metadata: {
+                  product_type: productTypeValue,
+                  unique_id: uniqueId,
+                  ...metadata,
+                },
               });
 
         const price = await stripe.prices.create({
@@ -200,8 +215,18 @@ export default (() => {
         return await stripe.checkout.sessions.create({
           mode: "subscription",
           payment_method_types: ["card"],
-          line_items: [{ price: price.id, quantity: 1 }],
-          metadata: { ...metadata, campaignId, amount, interval },
+          line_items: [
+            {
+              price_data: {
+                currency: "usd",
+                product: product.id,
+                unit_amount: Math.round(amount * 100),
+                recurring: { interval },
+              },
+              quantity: 1,
+            },
+          ],
+          metadata: { ...metadata, unique_id: uniqueId, amount, interval },
           success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
           cancel_url: `${process.env.FRONTEND_URL}/cancel`,
         });
@@ -222,12 +247,12 @@ export default (() => {
           case "checkout.session.completed":
             await handleCheckoutSession(event.data.object);
             break;
-          case "customer.subscription.created":
-            await handleSubscriptionCreated(event.data.object);
-            break;
-          case "customer.subscription.updated":
-            await handleSubscriptionUpdated(event);
-            break;
+          // case "customer.subscription.created":
+          //   await handleSubscriptionCreated(event.data.object);
+          //   break;
+          // case "customer.subscription.updated":
+          //   await handleSubscriptionUpdated(event);
+          //   break;
           default:
             strapi.log.debug(`Unhandled event: ${event.type}`);
         }
