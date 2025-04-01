@@ -59,10 +59,6 @@ export const PaymentConfirmationEmail = ({
               Email: {email}
             </Text>
 
-            <Text style={text}>
-              You will receive a receipt for your donation at {email}.
-            </Text>
-
             <Text style={footer}>
               If you have any questions about your donation, please{" "}
               <Link href="mailto:support@yourdomain.com" style={link}>

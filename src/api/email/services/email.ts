@@ -70,7 +70,7 @@ export default {
       documentId: documentId,
     });
     const batches = [];
-    console.log("this is the sendBlogNotificationInBatches function");
+
     for (let i = 0; i < subscribers.length; i += batchSize) {
       batches.push(subscribers.slice(i, i + batchSize));
     }

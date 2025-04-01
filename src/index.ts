@@ -1,5 +1,4 @@
 import type { Core } from "@strapi/strapi";
-import { emailNotificationMiddleware } from "../utils/document-service-middlewares";
 
 export default {
   /**
@@ -8,13 +7,7 @@ export default {
    *
    * This gives you an opportunity to extend code.
    */
-  register({ strapi }: { strapi: Core.Strapi }) {
-    const middlewares = [emailNotificationMiddleware];
-
-    middlewares.forEach((middleware) => {
-      strapi.documents.use(middleware());
-    });
-  },
+  register({ strapi }: { strapi: Core.Strapi }) {},
 
   /**
    * An asynchronous bootstrap function that runs before

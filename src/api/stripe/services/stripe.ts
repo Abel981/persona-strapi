@@ -56,10 +56,10 @@ export default (() => {
             lastName: metaData.lastName,
             email: metaData.email,
             address: metaData.address,
-            ...("campaignId" in metaData
+            ...(metaData.product_type === "campaign"
               ? {
                   campaign: {
-                    connect: [metaData.campaignId],
+                    connect: [metaData.unique_id],
                   },
                 }
               : {}),
@@ -73,8 +73,9 @@ export default (() => {
             currency: metaData.currency,
             donor: donor.documentId,
             interval: metaData.interval,
-            ...("campaignId" in metaData
-              ? { campaign: metaData["campaignId"] }
+            subscribeToUpdates: metaData.emailReports,
+            ...(metaData.product_type === "campaign"
+              ? { campaign: metaData["unique_id"] }
               : {}),
             message: metaData.message,
           },
@@ -85,8 +86,7 @@ export default (() => {
   };
 
   const handleCheckoutSession = async (session: any) => {
-    console.log("session", session.metadata);
-    if (session.metadata.campaignId !== undefined) {
+    if (session.metadata.product_type === "campaign") {
       await updateCampaignAmount(
         session.metadata.unique_id,
         (session.amount_total || 0) / 100
@@ -107,28 +107,28 @@ export default (() => {
     });
   };
 
-  const handleSubscriptionCreated = async (subscription: any) => {
-    if (subscription.metadata.campaignId !== undefined) {
-      await updateCampaignAmount(
-        subscription.metadata.unique_id,
-        (subscription.items.data[0].price.unit_amount || 0) / 100
-      );
-    }
-    await createDonation(subscription.metadata);
-  };
+  // const handleSubscriptionCreated = async (subscription: any) => {
+  //   if (subscription.metadata.campaignId !== undefined) {
+  //     await updateCampaignAmount(
+  //       subscription.metadata.unique_id,
+  //       (subscription.items.data[0].price.unit_amount || 0) / 100
+  //     );
+  //   }
+  //   await createDonation(subscription.metadata);
+  // };
 
-  const handleSubscriptionUpdated = async (event: any) => {
-    const { previous_attributes, object: subscription } = event.data;
-    if (
-      previous_attributes?.current_period_end !==
-      subscription.current_period_end
-    ) {
-      await updateCampaignAmount(
-        subscription.metadata.campaignId,
-        (subscription.items.data[0].price.unit_amount || 0) / 100
-      );
-    }
-  };
+  // const handleSubscriptionUpdated = async (event: any) => {
+  //   const { previous_attributes, object: subscription } = event.data;
+  //   if (
+  //     previous_attributes?.current_period_end !==
+  //     subscription.current_period_end
+  //   ) {
+  //     await updateCampaignAmount(
+  //       subscription.metadata.campaignId,
+  //       (subscription.items.data[0].price.unit_amount || 0) / 100
+  //     );
+  //   }
+  // };
 
   // ======================
   // PUBLIC API
@@ -161,7 +161,6 @@ export default (() => {
                 metadata: {
                   product_type: productTypeValue,
                   unique_id: uniqueId,
-                  ...metadata,
                 },
               });
 
@@ -178,16 +177,18 @@ export default (() => {
               quantity: 1,
             },
           ],
+          customer_email: metadata.email,
           metadata: {
             amount,
             product_type: productTypeValue,
             unique_id: uniqueId,
             ...metadata,
           },
-          success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-          cancel_url: `${process.env.FRONTEND_URL}/cancel`,
+          success_url: `${process.env.FRONTEND_URL}/payment-success`,
+          cancel_url: `${process.env.FRONTEND_URL}/payment-cancelled`,
         });
       } catch (error) {
+        console.log("error", error);
         throw new Error(`Payment creation failed: ${error.message}`);
       }
     },
@@ -218,16 +219,8 @@ export default (() => {
                 metadata: {
                   product_type: productTypeValue,
                   unique_id: uniqueId,
-                  ...metadata,
                 },
               });
-
-        const price = await stripe.prices.create({
-          unit_amount: Math.round(amount * 100),
-          currency: "usd",
-          recurring: { interval },
-          product: product.id,
-        });
 
         return await stripe.checkout.sessions.create({
           mode: "subscription",
@@ -243,9 +236,16 @@ export default (() => {
               quantity: 1,
             },
           ],
-          metadata: { ...metadata, unique_id: uniqueId, amount, interval },
-          success_url: `${process.env.FRONTEND_URL}/success?session_id={CHECKOUT_SESSION_ID}`,
-          cancel_url: `${process.env.FRONTEND_URL}/cancel`,
+          customer_email: metadata.email,
+          metadata: {
+            ...metadata,
+            unique_id: uniqueId,
+            amount,
+            interval,
+            product_type: productTypeValue,
+          },
+          success_url: `${process.env.FRONTEND_URL}/payment-success`,
+          cancel_url: `${process.env.FRONTEND_URL}/payment-cancelled`,
         });
       } catch (error) {
         throw new Error(`Subscription creation failed: ${error.message}`);
@@ -259,7 +259,6 @@ export default (() => {
           signature,
           config.webhookSecret
         );
-
         switch (event.type) {
           case "checkout.session.completed":
             await handleCheckoutSession(event.data.object);

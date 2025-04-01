@@ -1,7 +1,6 @@
 import csrfService from "../../src/api/csrf/services/csrf";
 export default (config, { strapi }) => {
   return async (ctx, next) => {
-    console.log("ctx.path", ctx.path);
     if (
       ["POST", "PUT", "PATCH"].includes(ctx.request.method) &&
       ["/api/volunteer"].includes(ctx.path)

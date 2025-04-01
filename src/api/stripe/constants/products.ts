@@ -1,12 +1,12 @@
 export const STRIPE_PRODUCTS = {
   CAMPAIGN: {
     type: "campaign",
-    getName: (title: string) => `Donation to ${title}`,
+    getName: (title: string) => `${title}`,
   },
 
   MEMBERSHIP: {
     type: "membership",
-    getName: (tier: string) => `${tier} Membership`,
+    getName: (tier: string) => `${tier} `,
   },
   // Add more product types as needed
 } as const;
